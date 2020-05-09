@@ -1,5 +1,15 @@
 from datetime import datetime, timedelta
+import logging
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s|%(name)s|%(levelname)s|%(funcName)s|%(message)s')
+
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(stream_handler)
 
 Movies_Release = [
     ("Iron Man", 126),
@@ -75,7 +85,7 @@ def get_current_movie(movies: list, percentage: float) -> str:
     for movie in movies:
         current_time += movie[1]
         cur_percentage = current_time/total_time
-        # print(f"DEBUG: {movie[0]} is {cur_percentage:.2f} of the MCU")
+        logger.debug(f"{movie[0]} is {cur_percentage:.2f} of the MCU")
         if cur_percentage > percentage:
             return movie[0]
     raise Exception
@@ -98,8 +108,10 @@ def main():
     date_of_conception = datetime.strptime("20190927", '%Y%m%d')
     date_of_birth = datetime.strptime("20200621", '%Y%m%d')
     date_current = datetime.now()
+    if date_current > date_of_birth:
+        print("Congrats on the new baby!")
     percent_loaded = get_baby_percentage(date_of_conception, date_of_birth, date_current)
-    print(percent_loaded)
+    logger.debug(f"Baby is {percent_loaded*100:.2f}% loaded")
     current_movie_chron = get_current_movie(Movies_Chronological, percent_loaded)
     current_movie_rel = get_current_movie(Movies_Release, percent_loaded)
     print(f"In Chronological Order, your baby is {current_movie_chron}")
